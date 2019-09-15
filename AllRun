@@ -1,0 +1,72 @@
+#!/bin/bash
+cd ${0%/*} || exit 1    # Run from this directory
+
+# Enable bash script
+shopt -s extglob
+
+# Clear screen
+clear
+
+# Source run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+echo ">>> Start new simulation or continue old one?     y -> NEW    n -> OLD"
+read -t 60 ContinueOrNot
+
+if [ "$ContinueOrNot" = "n" ]
+then
+	# Running in serial in Default
+
+	echo ">>> Simulation in parallel?     y -> YES    n -> NO"
+	read -t 60 SimMode
+
+	# Serial run
+	if [ "$SimMode" = "y" ]
+	then
+		# Decompose 8 domain
+		decomposePar
+		# Mpi run
+		mpirun -np $(getNumberOfProcessors) $(getApplication) -parallel
+	
+		echo
+		echo
+
+		# Reconstruct partition
+		reconstructPar
+		
+	else
+		# Run single core
+		$(getApplication)
+	fi
+# New Run
+else
+	./AllClean
+	# Create mesh
+	blockMesh
+
+	# Running in serial in Default
+
+	echo ">>> Simulation in parallel?     y -> YES    n -> NO"
+	read -t 60 SimMode
+
+	# Serial run
+	if [ "$SimMode" = "y" ]
+	then
+		# Decompose 8 domain
+		decomposePar
+		# Mpi run
+		mpirun -np $(getNumberOfProcessors) $(getApplication) -parallel
+	
+		echo
+		echo
+
+		# Reconstruct partition
+		reconstructPar
+	else
+		# Run single core
+		$(getApplication)
+	fi
+fi
+
+
+#------------------------------------------------------------------------------
