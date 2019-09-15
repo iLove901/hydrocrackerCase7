@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     hydrocrackerFoam;
+application     hydrocrackerFoam7;
 
 startFrom       startTime;
 
